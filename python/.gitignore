@@ -1,0 +1,12 @@
+# general things to ignore
+build/
+dist/
+.vscode/
+!.vscode/launch.json
+!.vscode/task.json
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
