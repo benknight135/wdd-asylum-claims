@@ -1,2 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.httr-oauth
+
 # general things to ignore
 .vscode/
+
