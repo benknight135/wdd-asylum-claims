@@ -1,28 +1,38 @@
 # HOW TO BUILD
 
-Check latest version of tools
+## Check latest version of tools
 
 ```bash
-python3 -m pip install --user --upgrade setuptools wheel
-python3 -m pip install --user --upgrade twine
 python -m pip install --user --upgrade setuptools wheel
 python -m pip install --user --upgrade twine
 ```
 
-Build package
+## Build package
 
 ```bash
-python3 setup.py sdist bdist_wheel
+python setup.py sdist bdist_wheel
 ```
 
-Upload package to test pip
+## Upload package to test pip
 
 ```bash
-python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 ```
 
-Install test pip
+## Install test pip
 
 ```bash
 python -m pip install --index-url https://test.pypi.org/simple/ --no-deps wddasylumclaims
+```
+
+## Upload package to pip
+
+```bash
+python -m twine upload dist/*
+```
+
+## Install pip
+
+```bash
+python -m pip install wddasylumclaims
 ```

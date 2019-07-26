@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.14",
+    version = "0.0.15",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
     description = ("An demonstration of how to create, document, and publish "
@@ -19,7 +19,7 @@ setup(
     keywords = "example documentation tutorial",
     url = "https://github.com/benknight135/wdd-asylum-claims",
     packages=['wddasylumclaims'],
-    install_requires=['requests','bs4'],
+    install_requires=['requests','bs4','pandas','feather-format','numpy'],
     package_data={
         'wddasylumclaims': ['sample'],
     },
