@@ -1,7 +1,9 @@
+library(rvest)
+
 #### Create vector of links for scraper to use
 
 # First page done individually as different address style
-s
+
 first_page <- read_html("https://tribunalsdecisions.service.gov.uk/utiac?utf8=%E2%9C%93&search%5Bquery%5D=&search%5Breported%5D=all&search%5Bcountry%5D=&search%5Bcountry_guideline%5D=0&search%5Bjudge%5D=&search%5Bclaimant%5D=")
 
 case_links <- first_page %>%
@@ -30,3 +32,6 @@ for (page_num in 2:933) {
 case_links_table <- as.data.table(case_links)
 
 feather::write_feather(case_links_table, "case_links.feather")
+
+
+
