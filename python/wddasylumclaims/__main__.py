@@ -1,5 +1,5 @@
-#from wddasylumclaims import LoadKeywords, WebScrape
-import LoadKeywords, WebScrape
+from wddasylumclaims import LoadKeywords, WebScrape
+#import LoadKeywords, WebScrape
 import argparse
 import os
 
