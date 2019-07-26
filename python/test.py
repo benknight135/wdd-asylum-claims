@@ -43,14 +43,14 @@ def test_main(args):
     # Get feather dataset from file
     #feather_dataset = feather.read_dataframe(feather_dataset_path)
     # Search for keywords in raw feather dataset
-    outcomes = Keywords.search_all_feather(feather_dataset,keywords)
+    feather_outcomes = Keywords.search_all_feather(feather_dataset,keywords)
 
     #TODO saving outcomes to feather file
 
-    path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\cases_to_500_outcomes.feather'
-    feather_outcomes = feather.read_dataframe(path)
-    print(feather_outcomes.columns.values)
-    #print(feather_outcomes)
+    #path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\cases_to_500_outcomes.feather'
+    #feather_outcomes = feather.read_dataframe(path)
+    #print(feather_outcomes.columns.values)
+    print(feather_outcomes)
 
 if __name__ == "__main__":
     main()
