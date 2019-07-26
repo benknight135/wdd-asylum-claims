@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.15",
+    version = "0.0.16",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
     description = ("An demonstration of how to create, document, and publish "
@@ -24,7 +24,7 @@ setup(
         'wddasylumclaims': ['sample'],
     },
     include_package_data=True,
-    data_files=[('Lib\\site-packages\\wddasylumclaims\\sample', ['sample/keywords.csv'])],
+    data_files=[('Lib\\site-packages\\wddasylumclaims\\sample', ['sample/keywords.csv','sample/case_links.feather'])],
     entry_points={
         'console_scripts': [
             'wddasylumclaims=wddasylumclaims.__main__:main',
