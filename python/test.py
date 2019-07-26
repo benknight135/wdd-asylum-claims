@@ -1,4 +1,4 @@
-from wddasylumclaims import Keywords
+from wddasylumclaims import Keywords, WebScrape
 import argparse
 import feather
 import os
@@ -29,16 +29,28 @@ def test_main(args):
     else:
         raise Exception("Invalid keyword filepath (MUST be csv or url of google sheet): {}".format(keyword_filepath))
 
-    # Search for keywords in all urls in feather
-    #feather_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\case_links.feather'
-    #feather_urls = feather.read_dataframe(feather_urls_path)
-    #feather_dataset = Keywords.search_all_urls(feather_urls,keywords)
-    # Save feather dataset
-    #TODO saving to url scraping to feather dataset
+    print (keywords.keys())
 
+    # Search for keywords in all urls in feather
+    feather_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\case_links.feather'
+    feather_urls = feather.read_dataframe(feather_urls_path)
+    # limit is added for testing so only a small sample of the urls are scraped
+    feather_dataset = WebScrape.scrape_feather_urls(feather_urls,limit=5)
+    #print(feather_dataset)
+    # Save feather dataset
+    #TODO saving to url scraping to feather dataset file
+
+    # Get feather dataset from file
+    #feather_dataset = feather.read_dataframe(feather_dataset_path)
     # Search for keywords in raw feather dataset
-    feather_dataset = feather.read_dataframe(feather_dataset_path)
-    Keywords.search_all_feather(feather_dataset,keywords)
-    
+    outcomes = Keywords.search_all_feather(feather_dataset,keywords)
+
+    #TODO saving outcomes to feather file
+
+    path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\cases_to_500_outcomes.feather'
+    feather_outcomes = feather.read_dataframe(path)
+    print(feather_outcomes.columns.values)
+    #print(feather_outcomes)
+
 if __name__ == "__main__":
     main()
