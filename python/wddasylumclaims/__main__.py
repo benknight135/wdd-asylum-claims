@@ -1,10 +1,13 @@
-from wddasylumclaims import LoadKeywords, WebScrape
+#from wddasylumclaims import LoadKeywords, WebScrape
+import LoadKeywords, WebScrape
 import argparse
 import os
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    defaultPath = script_dir+'\\sample\\keywords.csv'
+    #defaultPath = script_dir+'\\..\\sample\\keywords.csv'
+    #defaultPath = script_dir+'\\sample\\keywords.csv'
+    defaultPath = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8qMS3_t8ibuOkmMwzvJA7CXil3vbeCpbubrCPZByxcPHpCN4eBnsmQslU18E_8uDC6jiuvp5X-aEw/pub?gid=0&single=true&output=csv"
     defaultUrl = "https://tribunalsdecisions.service.gov.uk/utiac/pa-05705-2017-a23c9180-6c47-40f3-9294-67754ec19a04"
     #defaultSearchUrl = "https://tribunalsdecisions.service.gov.uk/utiac?utf8=%E2%9C%93&search%5Bquery%5D=Sexual+orientation&search%5Breported%5D=all&search%5Bcountry%5D=&search%5Bcountry_guideline%5D=0&search%5Bjudge%5D=&search%5Bclaimant%5D="
 
@@ -16,10 +19,15 @@ def main():
     cmd_main(args)
 
 def cmd_main(args):
-    # Get keywords from csv
+    # Get keywords from spreadsheet
     known_headers = ["introductory_headings", "unsuccessful", "successful", "ambiguous_outcome", "country","dob"]
-    keywords = LoadKeywords.find(args["filepath"],known_headers)
 
+    # Get keywords from google sheet
+    keywords = LoadKeywords.find_google_sheet(args["filepath"],known_headers)
+
+    # Get keywords from csv file
+    #keywords = LoadKeywords.find(args["filepath"],known_headers)
+    
     # Scrape html page for decision document
     div_name = 'decision-inner'
     decision_html = WebScrape.scrape(args["url"],div_name)
