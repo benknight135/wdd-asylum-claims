@@ -3,6 +3,7 @@ library(data.table)        # For data structure
 library(googlesheets)      # To read from google sheets
 library(stringr)           # Regex value extraction
 library(feather)           # Storage of files
+library(textreadr)         # Reading .doc files
 
 
 #### Data for identifying stuff
@@ -31,6 +32,12 @@ regex_dob <- paste0(
   " ).*?\\d{4}"
 )
 
-regex_sogi <- "sexual orientation|lgbt|LGBT|lesbian|\\bgay\\b|bisexual|transgender|gender identity"
+regex_so <- paste0(key_phrases[!is.na(sexual_orientation_case), sexual_orientation_case], collapse = "|")
+
+regex_gi <- paste0(key_phrases[!is.na(gender_identity_case), gender_identity_case], collapse = "|")
+
+regex_sogi_other <- paste0(key_phrases[!is.na(unknown_sogi_case), unknown_sogi_case], collapse = "|")
+
+regex_heard <- "(?<=Heard at )\\b.*?(?=\\s)"
 
 
