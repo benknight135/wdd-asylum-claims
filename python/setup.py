@@ -24,7 +24,7 @@ setup(
         'wddasylumclaims': ['sample'],
     },
     include_package_data=True,
-    data_files=[('Lib\\site-packages\\wddasylumclaims\\sample', ['sample/keywords.csv','sample/case_links.feather'])],
+    data_files=[('Lib\\site-packages\\wddasylumclaims\\sample', ['sample/keywords.csv','sample/case_links.feather','sample/case_text_to_500.feather'])],
     entry_points={
         'console_scripts': [
             'wddasylumclaims=wddasylumclaims.__main__:main',
