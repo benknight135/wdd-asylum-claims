@@ -37,8 +37,11 @@ def test_main(args):
             # set offline csv to update from google doc (hard coded as loaded from sample folder in package directory)
             offline_keywords_csv_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\keywords.csv'
             # update offline csv with google sheet data
-            Keywords.update_csv(keyword_filepath,offline_keywords_csv_path)
-            print("Offline keywords document updated")
+            success = Keywords.update_csv(keyword_filepath,offline_keywords_csv_path)
+            if (success):
+                print("Offline keywords document updated")
+            else:
+                raise Exception("Failed to update offline keywords document")
             keyword_filepath = offline_keywords_csv_path
         else:
             raise Exception("Invalid keyword filepath (MUST be url of google sheet for updating offline csv): {}".format(keyword_filepath))
@@ -63,6 +66,8 @@ def test_main(args):
         print("Loading keywords from google sheet:")
         print(keyword_filepath)
         keywords = Keywords.find_google_sheet(keyword_filepath)
+        if (keywords == False):
+            raise Exception("Failed to find google sheet")
     elif (".csv" in keyword_filepath): #filepath is not a website so assumed to be a csv
         print("Loading keywords from csv: ")
         print(keyword_filepath)
@@ -71,8 +76,8 @@ def test_main(args):
         raise Exception("Invalid keyword filepath (MUST be csv or url of google sheet): {}".format(keyword_filepath))
 
     if (links_filepath == False):
-        # (limit can be added for testing so only a small sample of page numbers are scraped)
-        feather_urls = WebScrape.scrape_url_list(limit=1)
+        # (limit can be added for testing so only a small sample of page numbers are scraped e.g. limit=[4,100])
+        feather_urls = WebScrape.scrape_url_list()
         # Save urls to feather file
         feather_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_links.feather'
         feather.write_dataframe(feather_urls, feather_urls_path)
@@ -94,9 +99,9 @@ def test_main(args):
 
     if (dataset_filepath == False):
         # Scrap urls for data
-        # (limit can be added for testing so only a small sample of the urls are scraped)
+        # (limit can be added for testing so only a small sample of the urls are scraped e.g. limit=[4,100])
         print()
-        feather_dataset = WebScrape.scrape_urls(feather_urls,limit=5)
+        feather_dataset = WebScrape.scrape_urls(feather_urls)
         # Save dataset as feather file
         feather_dataset_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_text.feather'
         feather.write_dataframe(feather_dataset, feather_dataset_path)
