@@ -1,6 +1,10 @@
 ,case_id,promulgation_date,sogi_case,unsuccessful,successful,ambiguous,country,date_of_birth,outcome_known,multiple_outcomes,no_page_available
-0,[2019] UKUT 217,2019-07-01,False,False,False,False,,,True,False,False
-1,[2019] UKUT 216,2019-06-28,False,False,False,False,Belgium,,True,False,False
-2,[2019] UKUT 197,2019-06-07,False,False,False,False,Nigeria,1 September 1977,True,False,False
-3,RP/00159/2017,2019-06-03,False,False,False,False,Kosovo,28 December 1972,True,False,False
-4,RP/00032/2018,2019-06-03,True,False,False,False,,,True,False,False
+0,EA/04096/2018,2019-05-14,False,False,False,False,,,True,False,False
+1,EA/03465/2018,2019-05-14,False,False,False,False,Pakistan,,True,False,False
+2,DA/00360/2017,2019-05-14,False,False,False,False,France,,True,False,False
+3,AA/12467/2015,2019-05-14,False,False,False,False,Sri,23 June 1983,True,False,False
+4,AA/08375/2011 & Ors.,2019-05-14,False,False,False,False,,,True,False,False
+5,PA/12387/2018,2019-05-13,False,False,False,False,,,True,False,False
+6,PA/08743/2018,2019-05-13,False,False,False,False,,,True,False,False
+7,PA/07142/2018,2019-05-13,False,False,False,False,India,,True,False,False
+8,PA/05660/2017,2019-05-13,False,False,False,False,,8 May 2013,True,False,False

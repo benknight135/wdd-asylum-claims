@@ -1,0 +1,31 @@
+case_id,promulgation_date,sogi_case,unsuccessful,successful,ambiguous,country,date_of_birth,outcome_known,multiple_outcomes,no_page_available
+0,[2019] UKUT 217,2019-07-01,False,False,False,False,,,True,False,False
+1,[2019] UKUT 216,2019-06-28,False,False,False,False,Belgium,,True,False,False
+2,[2019] UKUT 197,2019-06-07,False,False,False,False,Nigeria,1 September 1977,True,False,False
+3,RP/00159/2017,2019-06-03,False,False,False,False,Kosovo,28 December 1972,True,False,False
+4,RP/00032/2018,2019-06-03,True,False,False,False,,,True,False,False
+5,PA/12260/2018,2019-06-03,False,False,False,False,Albania,10 February 1960,True,False,False
+6,PA/05879/2018,2019-06-03,False,False,False,False,Iraq,14 July 1976,True,False,False
+7,PA/04865/2018,2019-06-03,False,False,False,False,,6 June 1993,True,False,False
+8,PA/03532/2018,2019-06-03,False,False,False,False,,4 May 1997,True,False,False
+9,HU/08759/2017,2019-06-03,False,False,False,False,Bangladesh,9 October 1989,True,False,False
+10,HU/07061/2018,2019-06-03,False,False,False,False,Bangladesh,,True,False,False
+11,HU/06168/2018,2019-06-03,False,False,False,False,Pakistan,27 November 1981,True,False,False
+12,PA/07563/2018,2019-05-31,False,False,False,False,,,True,False,False
+13,PA/13128/2018,2019-05-31,False,False,False,False,,,True,False,False
+14,PA/12219/2018,2019-05-31,False,False,False,False,,,True,False,False
+15,PA/12165/2018,2019-05-31,False,False,False,False,Iran,,True,False,False
+16,PA/07424/2018,2019-05-31,False,False,True,False,,,True,False,False
+17,PA/07261/2017,2019-05-31,False,False,False,False,Bangladesh,23 March 1956,True,False,False
+18,PA/04408/2018,2019-05-31,False,False,False,False,,,True,False,False
+19,HU/20928/2018 & Ors.,2019-05-31,False,False,False,False,India,,True,False,False
+20,HU/17812/2018,2019-05-31,False,False,False,False,,,True,False,False
+21,HU/05919/2018,2019-05-31,False,False,False,False,,,True,False,False
+22,HU/02695/2018 & Ors .,2019-05-31,False,False,False,False,,21 September 1974,True,False,False
+23,HU/01695/2018,2019-05-31,False,False,False,False,,,True,False,False
+24,DA/00121/2018,2019-05-31,False,False,False,False,,,True,False,False
+25,PA/13434/2018,2019-05-30,False,False,False,False,,,True,False,False
+26,PA/12225/2018,2019-05-30,False,False,False,False,Iraq,,True,False,False
+27,PA/12111/2017,2019-05-30,False,False,False,False,Bangladesh,14 November 1979,True,False,False
+28,PA/11145/2018,2019-05-30,False,False,False,False,,,True,False,False
+29,PA/10315/2017,2019-05-30,False,False,False,False,,,True,False,False

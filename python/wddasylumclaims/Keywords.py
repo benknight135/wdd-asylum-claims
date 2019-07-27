@@ -8,8 +8,22 @@ import re
 
 def update_csv(url_google_sheet,csv_filepath):
     with open(csv_filepath, mode='w',encoding="utf-8",newline="") as csv_file:
-        response = requests.get(url_google_sheet)
-        csv_reader = csv.DictReader(response.iter_lines(decode_unicode='utf-8'), delimiter=',')
+        try:
+            resp = requests.get(url_google_sheet,timeout=3)
+            resp.raise_for_status()
+        except requests.exceptions.RequestException as err:
+            print ("OOps: Something Else",err)
+            return False
+        except requests.exceptions.HTTPError as errh:
+            print ("Http Error:",errh)
+            return False
+        except requests.exceptions.ConnectionError as errc:
+            print ("Error Connecting:",errc)
+            return False
+        except requests.exceptions.Timeout as errt:
+            print ("Timeout Error:",errt)
+            return False
+        csv_reader = csv.DictReader(resp.iter_lines(decode_unicode='utf-8'), delimiter=',')
         fieldnames = csv_reader.fieldnames
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
@@ -25,6 +39,7 @@ def update_csv(url_google_sheet,csv_filepath):
                 if (row[h]):
                     newRow[h] = row[h]
             writer.writerow(newRow)
+    return True
 
 def find_csv(csv_filepath):
     # initialise keywords dictionary with known headings
@@ -47,8 +62,23 @@ def find_csv(csv_filepath):
 
 
 def find_google_sheet(url):
-    response = requests.get(url)
-    csv_reader = csv.DictReader(response.iter_lines(decode_unicode='utf-8'), delimiter=',')
+    try:
+        resp = requests.get(url)
+        resp.raise_for_status()
+    except requests.exceptions.RequestException as err:
+        print ("OOps: Something Else",err)
+        return False
+    except requests.exceptions.HTTPError as errh:
+        print ("Http Error:",errh)
+        return False
+    except requests.exceptions.ConnectionError as errc:
+        print ("Error Connecting:",errc)
+        return False
+    except requests.exceptions.Timeout as errt:
+        print ("Timeout Error:",errt)
+        return False
+        
+    csv_reader = csv.DictReader(resp.iter_lines(decode_unicode='utf-8'), delimiter=',')
 
     known_headers = csv_reader.fieldnames
     keywords = {}
@@ -85,7 +115,6 @@ def findKeywordsFeather(feather_dataframe, keywords):
                     if h == "country":
                         regex = r"\b"+re.escape(k)+r"\b[ ]['A-Z']"
                     idx = re.search(regex,data)
-                    #idx = data.find(k)
                     if (idx != None):
                         idx = idx.start()
                         if (idx > -1):
@@ -127,6 +156,9 @@ def search_all_feather(feather_dataset, keywords):
         'country': [], 'date_of_birth': [], 'outcome_known': [],
         'multiple_outcomes': [], 'no_page_available': []
     }
+
+    backup_count = 0
+    backup_count_max = 50 # backup every 50 rows
 
     for index, row in feather_dataset.iterrows():
         raw_data = row['full_text']
@@ -219,6 +251,20 @@ def search_all_feather(feather_dataset, keywords):
         outcomes.setdefault('outcome_known', []).append(outcome_known)
         outcomes.setdefault('multiple_outcomes', []).append(multiple_outcomes)
         outcomes.setdefault('no_page_available', []).append(no_page_available)
+
+        backup_count = backup_count + 1
+        if backup_count > backup_count_max:
+            backup_count = 0
+            print ("Saving backup...")
+            # store temperary csv and feather files after each row to backup data
+            feather_outcomes = pd.DataFrame(outcomes)
+            # Save backup feather file
+            feather_outcomes_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_outcomes.feather'
+            feather.write_dataframe(feather_outcomes, feather_outcomes_path)
+            # Save backup csv file
+            csv_outcomes_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_outcomes.csv'
+            feather_outcomes.to_csv(csv_outcomes_path,index_label=False)
+            print ("Backup saved")
 
     feather_outcomes = pd.DataFrame(outcomes)
     return feather_outcomes
