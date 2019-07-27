@@ -7,17 +7,18 @@ import os
 import feather
 import win32com.client
 
-def scrape_url_list(limit=None,url_pre="https://tribunalsdecisions.service.gov.uk/utiac?page=", url_post="&search%5Bclaimant%5D=&search%5Bcountry%5D=&search%5Bcountry_guideline%5D=&search%5Bjudge%5D=&search%5Bquery%5D=&search%5Breported%5D=all&utf8=%E2%9C%93"):
+def scrape_url_list(limit=None,backupFolder=None,backupRate=5,url_pre="https://tribunalsdecisions.service.gov.uk/utiac?page=", url_post="&search%5Bclaimant%5D=&search%5Bcountry%5D=&search%5Bcountry_guideline%5D=&search%5Bjudge%5D=&search%5Bquery%5D=&search%5Breported%5D=all&utf8=%E2%9C%93"):
     print ("Starting grabbing url list from search url...")
 
     urls = {'case_links':[]}
 
     backup_count = 0
-    backup_count_max = 5 #backup every pages
+    backup_count_max = backupRate # backup every n pages
 
     max_pages = 935
-    
 
+    prevArrLen = 0
+    
     startIdx = 1
     if (not limit == None):
         if (limit[0] > 0):
@@ -51,7 +52,6 @@ def scrape_url_list(limit=None,url_pre="https://tribunalsdecisions.service.gov.u
             soup = BeautifulSoup(resp.content, features="html.parser")
             
             tds = soup.find_all("td")
-            print ("{} links found".format(len(tds)))
             for td in tds:
                 if (td.get("class") == ["reported"] or td.get("class") == ["unreported"]):
                     a = td.find_all("a")[0]
@@ -60,17 +60,39 @@ def scrape_url_list(limit=None,url_pre="https://tribunalsdecisions.service.gov.u
 
             print("{}/{}".format(p, max_pages-1))
         
-        backup_count = backup_count + 1
+        newLinksCount = len(urls['case_links']) - prevArrLen
+        prevArrLen = len(urls['case_links'])
+        print("new links added: {}".format(newLinksCount))
+
+        backup_count = backup_count + newLinksCount
+
         if backup_count > backup_count_max:
             backup_count = 0
             print ("Saving backup...")
             # store temperary csv and feather files after each page to backup data
             feather_urls = pd.DataFrame(urls)
+            
+            # Check backup directory is valid exists
+            if (backupFolder == None):
+                script_dir = os.path.dirname(os.path.realpath(__file__))
+                if (os.path.exists(script_dir + "\\sample")):
+                    feather_urls_path = script_dir +'\\sample\\py_tmp_case_links.feather'
+                    csv_urls_path = script_dir +'\\sample\\py_tmp_case_links.csv'
+                elif (os.path.exists(script_dir + "\\..\\sample")):
+                    feather_urls_path = script_dir +'\\..\\sample\\py_tmp_case_links.feather'
+                    csv_urls_path = script_dir +'\\..\\sample\\py_tmp_case_links.csv'
+                else:
+                    raise Exception ("Script is in unexpected location, cannot locate sample folder")
+            else:
+                if (os.path.exists(backupFolder)):
+                    feather_urls_path = backupFolder + '\\py_tmp_case_links.feather'
+                    csv_urls_path = backupFolder + '\\py_tmp_case_links.csv'
+                else:
+                    raise Exception ("Backup folder does not exist: {}".format(backupFolder))
+
             # Save backup feather file
-            feather_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_links.feather'
             feather.write_dataframe(feather_urls, feather_urls_path)
             # Save backup csv file
-            csv_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_links.csv'
             feather_urls.to_csv(csv_urls_path,index_label=False)
             print("Backup saved")
 
@@ -160,7 +182,15 @@ def get_doc_data(url):
         print ("Timeout Error:",errt)
         return False
 
-    doc_filepath = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\tmp_web.doc'
+    # Check backup directory is valid exists
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    if (os.path.exists(script_dir + "\\sample")):
+        doc_filepath = script_dir +'\\sample\\tmp_web.doc'
+    elif (os.path.exists(script_dir + "\\..\\sample")):
+        doc_filepath = script_dir +'\\..\\sample\\tmp_web.doc'
+    else:
+        raise Exception ("Script is in unexpected location, cannot locate sample folder")
+
     with open(doc_filepath, 'wb') as f:
         for chunk in resp.iter_content(1024 * 1024 * 2):
             f.write(chunk)
@@ -244,7 +274,7 @@ def scrape_header(url):
 
     return False
 
-def scrape_urls(feather_urls, limit=None, div_name="decision-inner", url_prefix="https://tribunalsdecisions.service.gov.uk"):
+def scrape_urls(feather_urls, limit=None, backupFolder=None, backupRate=50 ,div_name="decision-inner", url_prefix="https://tribunalsdecisions.service.gov.uk"):
     rows_count, cols_count = feather_urls.shape
     if (not limit == None):
         if (limit[1] > 0):
@@ -255,11 +285,11 @@ def scrape_urls(feather_urls, limit=None, div_name="decision-inner", url_prefix=
     print("Scrapping data from urls...")
 
     backup_count = 0
-    backup_count_max = 50 # backup every 50 rows
+    backup_count_max = backupRate # backup every n rows
 
     for index, row in feather_urls.iterrows():
         if (not limit == None):
-            if ((index < (limit[0]-1))):
+            if ((index < (limit[0]-1)) and (limit[0] > 0)):
                 continue
 
         # get url from feather data
@@ -287,11 +317,28 @@ def scrape_urls(feather_urls, limit=None, div_name="decision-inner", url_prefix=
             print ("Saving backup...")
             # store temperary csv and feather files after each row to backup data
             feather_dataset = pd.DataFrame(dataset)
+
+            # Check backup directory is valid exists
+            if (backupFolder == None):
+                script_dir = os.path.dirname(os.path.realpath(__file__))
+                if (os.path.exists(script_dir + "\\sample")):
+                    feather_dataset_path = script_dir +'\\sample\\py_tmp_case_text.feather'
+                    csv_dataset_path = script_dir +'\\sample\\py_tmp_case_text.csv'
+                elif (os.path.exists(script_dir + "\\..\\sample")):
+                    feather_dataset_path = script_dir +'\\..\\sample\\py_tmp_case_text.feather'
+                    csv_dataset_path = script_dir +'\\..\\sample\\py_tmp_case_text.csv'
+                else:
+                    raise Exception ("Script is in unexpected location, cannot locate sample folder")
+            else:
+                if (os.path.exists(backupFolder)):
+                    feather_dataset_path = backupFolder + '\\py_tmp_case_text.feather'
+                    csv_dataset_path = backupFolder + '\\py_tmp_case_text.csv'
+                else:
+                    raise Exception ("Backup folder does not exist: {}".format(backupFolder))
+
             # Save backup feather file
-            feather_dataset_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_text.feather'
             feather.write_dataframe(feather_dataset, feather_dataset_path)
             # Save backup csv file
-            csv_dataset_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_text.csv'
             feather_dataset.to_csv(csv_dataset_path,index_label=False)
             print ("Backup saved")
 

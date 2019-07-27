@@ -148,7 +148,7 @@ def findKeywordsDiv(div, keywords):
     return keywordLoc, keywordCount
 
 
-def search_all_feather(feather_dataset, keywords):
+def search_all_feather(feather_dataset, keywords, backupFolder=None, backupRate=50):
     outcomes_raw = findKeywordsFeather(feather_dataset, keywords)
     outcomes = {
         'case_id': [], 'promulgation_date': [], 'sogi_case': [],
@@ -158,7 +158,7 @@ def search_all_feather(feather_dataset, keywords):
     }
 
     backup_count = 0
-    backup_count_max = 50 # backup every 50 rows
+    backup_count_max = backupRate # backup every n rows
 
     for index, row in feather_dataset.iterrows():
         raw_data = row['full_text']
@@ -258,11 +258,28 @@ def search_all_feather(feather_dataset, keywords):
             print ("Saving backup...")
             # store temperary csv and feather files after each row to backup data
             feather_outcomes = pd.DataFrame(outcomes)
+
+            # Check backup directory is valid exists
+            if (backupFolder == None):
+                script_dir = os.path.dirname(os.path.realpath(__file__))
+                if (os.path.exists(script_dir + "\\sample")):
+                    feather_outcomes_path = script_dir +'\\sample\\py_tmp_case_outcomes.feather'
+                    csv_outcomes_path = script_dir +'\\sample\\py_tmp_case_outcomes.csv'
+                elif (os.path.exists(script_dir + "\\..\\sample")):
+                    feather_outcomes_path = script_dir +'\\..\\sample\\py_tmp_case_outcomes.feather'
+                    csv_outcomes_path = script_dir +'\\..\\sample\\py_tmp_case_outcomes.csv'
+                else:
+                    raise Exception ("Script is in unexpected location, cannot locate sample folder")
+            else:
+                if (os.path.exists(backupFolder)):
+                    feather_outcomes_path = backupFolder + '\\py_tmp_case_outcomes.feather'
+                    csv_outcomes_path = backupFolder + '\\py_tmp_case_outcomes.csv'
+                else:
+                    raise Exception ("Backup folder does not exist: {}".format(backupFolder))
+
             # Save backup feather file
-            feather_outcomes_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_outcomes.feather'
             feather.write_dataframe(feather_outcomes, feather_outcomes_path)
             # Save backup csv file
-            csv_outcomes_path = os.path.dirname(os.path.realpath(__file__)) +'\\..\\sample\\py_tmp_case_outcomes.csv'
             feather_outcomes.to_csv(csv_outcomes_path,index_label=False)
             print ("Backup saved")
 

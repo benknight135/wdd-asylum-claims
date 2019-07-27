@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.19",
+    version = "0.0.22",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
     description = ("Asylum Seekers Claims scrapping of data",

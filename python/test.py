@@ -14,11 +14,55 @@ def main():
     parser.add_argument('-d','--dataset',type=str, help="filepath to dataset of claims in plain text (see sample folder for file synax. Can be csv or feather)")
     parser.add_argument('-l','--links',type=str, help="filepath to dataset of links to claims (see sample folder for file synax. Can be csv or feather)")
     parser.add_argument('-r','--results',type=str, help="filepath to dataset of outcomes of claims (see sample folder for file synax. Can be csv or feather)")
+    parser.add_argument('-i','--index',nargs='*',help="min/max index limits for url pages numbers when searching and case indexs when getting data. Use 0 to grab all the data (e.g. no max or no min). --index MIN_URL_PAGE_INDEX MAX_URL_PAGE_INDEX MIN_CASE_INDEX MAX_CASE_INDEX")
+    parser.add_argument('-o','--output',type=str,help="filepath to directory to save results")
+    parser.add_argument('-t','--type',type=str,default="both",help="choose filetype to save results as (either 'csv'/'feather'/'both')")
+    parser.add_argument('-b','--backup',type=int,default=100,help="how many rows in dataset before a backup is stored (this prevents complete loss of data if there is a problem during a long search).")
 
     args = vars(parser.parse_args())
-    test_main(args)
+    run(args)
 
-def test_main(args):
+def run(args):
+    # Load output folder from arguments
+    output_folder = None
+    if (args["output"]):
+        if (os.path.exists(args["output"])):
+            output_folder = args["output"]
+        else:
+            raise Exception("Folder directory for output does not exist: {}".format(args["output"]))
+
+    # Load output type from arguments (csv or feather)
+    output_type = args["type"]
+    if (not (output_type == "both" or output_type == "csv" or output_type == "feather")):
+        raise Exception ("Output type MUST be 'csv'/'feather'/'both'")
+
+    # Load backup rate from arguments
+    backup_rate = args["backup"]
+    if (backup_rate <= 0):
+        raise Exception ("MUST be a value greater than 0")
+
+    # Load limits from arguments
+    page_limits = None
+    url_limits = None
+    if (args["index"]):
+        if (len(args["index"]) == 4):
+            page_limits = [int(args["index"][0]), int(args["index"][1])]
+            url_limits = [int(args["index"][2]), int(args["index"][3])]
+        else:
+            raise Exception ("Invalid number of index values for index. MUST be 4.")
+
+    # Check backup directory is valid exists
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    if (os.path.exists(script_dir + "\\sample")):
+        sample_dir = script_dir +'\\sample'
+    elif (os.path.exists(script_dir + "\\..\\sample")):
+        sample_dir = script_dir +'\\..\\sample'
+    else:
+        raise Exception ("Script is in unexpected location, cannot locate sample folder")
+
+    if (output_folder == None):
+        output_folder = sample_dir
+
     keyword_filepath = False
     if (args["keywords"]): # keywords filepath defined in arguments
         # get keyword filepath from argument
@@ -35,7 +79,7 @@ def test_main(args):
             print("Updating keywords document using:")
             print(keyword_filepath)
             # set offline csv to update from google doc (hard coded as loaded from sample folder in package directory)
-            offline_keywords_csv_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\keywords.csv'
+            offline_keywords_csv_path = output_folder+'\\keywords.csv'
             # update offline csv with google sheet data
             success = Keywords.update_csv(keyword_filepath,offline_keywords_csv_path)
             if (success):
@@ -48,7 +92,7 @@ def test_main(args):
 
     if (keyword_filepath == False):
         # default load sample offline csv of keywords (update from google doc using --keywords [filepath] or --update_keywords)
-        keyword_filepath = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\keywords.csv'
+        keyword_filepath = sample_dir+'\\keywords.csv'
 
     # Load filepaths from arguments if provided
     links_filepath = False
@@ -77,12 +121,12 @@ def test_main(args):
 
     if (links_filepath == False):
         # (limit can be added for testing so only a small sample of page numbers are scraped e.g. limit=[4,100])
-        feather_urls = WebScrape.scrape_url_list()
+        feather_urls = WebScrape.scrape_url_list(limit=page_limits,backupFolder=output_folder,backupRate=backup_rate)
         # Save urls to feather file
-        feather_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_links.feather'
+        feather_urls_path = output_folder+'\\py_case_links.feather'
         feather.write_dataframe(feather_urls, feather_urls_path)
         # Save urls as csv file
-        csv_urls_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_links.csv'
+        csv_urls_path = output_folder+'\\py_case_links.csv'
         feather_urls.to_csv(csv_urls_path,index_label=False)
     else:
         if (".feather" in links_filepath):
@@ -101,12 +145,12 @@ def test_main(args):
         # Scrap urls for data
         # (limit can be added for testing so only a small sample of the urls are scraped e.g. limit=[4,100])
         print()
-        feather_dataset = WebScrape.scrape_urls(feather_urls)
+        feather_dataset = WebScrape.scrape_urls(feather_urls,limit=url_limits,backupFolder=output_folder,backupRate=backup_rate)
         # Save dataset as feather file
-        feather_dataset_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_text.feather'
+        feather_dataset_path = output_folder+'\\py_case_text.feather'
         feather.write_dataframe(feather_dataset, feather_dataset_path)
         # Save dataset as csv file
-        csv_dataset_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_text.csv'
+        csv_dataset_path = output_folder+'\\py_case_text.csv'
         feather_dataset.to_csv(csv_dataset_path)
     else:
         if (".feather" in dataset_filepath):
@@ -124,12 +168,12 @@ def test_main(args):
     if (outcomes_filepath == False):
         # Search for keywords in feather dataset
         print()
-        feather_outcomes = Keywords.search_all_feather(feather_dataset,keywords)
+        feather_outcomes = Keywords.search_all_feather(feather_dataset,keywords,backupRate=backup_rate)
         # Save outcomes to feather file
-        feather_outcomes_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_outcomes.feather'
+        feather_outcomes_path = output_folder+'\\py_case_outcomes.feather'
         feather.write_dataframe(feather_outcomes, feather_outcomes_path)
         # Save outcomes to csv file
-        csv_outcomes_path = os.path.dirname(os.path.realpath(__file__)) +'\\sample\\py_case_outcomes.csv'
+        csv_outcomes_path = output_folder+'\\py_case_outcomes.csv'
         feather_outcomes.to_csv(csv_outcomes_path)
     else:
         if (".feather" in outcomes_filepath):
