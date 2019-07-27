@@ -6,4 +6,4 @@
 
 # general things to ignore
 .vscode/
-
+__pycache__/
