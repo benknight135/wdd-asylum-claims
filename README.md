@@ -2,6 +2,8 @@
 
 This is part of the Women Driven Development hackathon, [#TechItForward with Pride](https://womendrivendev.org/events). 
 
+Project website deployed via GitHub Pages at <https://benknight135.github.io/wdd-asylum-claims/>
+
 ## Data
 
 The project focuses on better understanding the outcomes of asylum claims made by people on the grounds of sexual orientation and/or gender identity (SOGI), using two key sources: 
