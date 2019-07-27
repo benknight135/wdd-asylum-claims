@@ -1,11 +1,30 @@
+from wddasylumclaims import WebScrape
+import pandas as pd
 import csv
 import os
 import requests
 import feather
 import re
-from wddasylumclaims import WebScrape
-from collections import defaultdict
-import pandas as pd
+
+def update_csv(url_google_sheet,csv_filepath):
+    with open(csv_filepath, mode='w',encoding="utf-8",newline="") as csv_file:
+        response = requests.get(url_google_sheet)
+        csv_reader = csv.DictReader(response.iter_lines(decode_unicode='utf-8'), delimiter=',')
+        fieldnames = csv_reader.fieldnames
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+
+        known_headers = csv_reader.fieldnames
+        keywords = {}
+        for h in known_headers:
+            keywords[h] = []
+
+        for row in csv_reader:
+            newRow = {}
+            for h in known_headers:
+                if (row[h]):
+                    newRow[h] = row[h]
+            writer.writerow(newRow)
 
 def find_csv(csv_filepath):
     # initialise keywords dictionary with known headings
@@ -29,8 +48,7 @@ def find_csv(csv_filepath):
 
 def find_google_sheet(url):
     response = requests.get(url)
-    csv_reader = csv.DictReader(response.iter_lines(
-        decode_unicode='utf-8'), delimiter=',')
+    csv_reader = csv.DictReader(response.iter_lines(decode_unicode='utf-8'), delimiter=',')
 
     known_headers = csv_reader.fieldnames
     keywords = {}
@@ -63,13 +81,18 @@ def findKeywordsFeather(feather_dataframe, keywords):
         for h in keywords.keys():
             for k in keywords[h]:
                 if (data):
-                    idx = data.find(k)
+                    regex = r"\b"+re.escape(k)+r"\b"
+                    if h == "country":
+                        regex = r"\b"+re.escape(k)+r"\b[ ]['A-Z']"
+                    idx = re.search(regex,data)
+                    #idx = data.find(k)
                     if (idx != None):
+                        idx = idx.start()
                         if (idx > -1):
                             keywordLoc.setdefault(h, []).append([idx,idx+len(k)])
                             keywordCount[h] = keywordCount[h] + 1
 
-        print("{}/{}".format(index, rows_count))
+        print("{}/{}".format(index+1, rows_count))
 
         outcomes.append(
             {'id': case_id, 'keywordCount': keywordCount, 'keywordLoc': keywordLoc})
@@ -137,7 +160,7 @@ def search_all_feather(feather_dataset, keywords):
 
         if (keywordCount['dob'] > 0):
             #dob found
-            charIndexStart = int(keywordLoc['dob'][0][0])
+            charIndexStart = int(keywordLoc['dob'][0][1]) + 1
             charIndexEnd = len(raw_data)
             if (len(raw_data) > charIndexStart + 50):
                 charIndexEnd = charIndexStart + 50
@@ -146,9 +169,7 @@ def search_all_feather(feather_dataset, keywords):
             regex = r".*?\d{4}"
             matches = re.findall(regex,slicetext)
             if len(matches) > 0:
-                date_of_birth = matches
-
-        #TODO find promulgation_date
+                date_of_birth = matches[0]
 
         if (keywordCount['sexual_orientation_case'] > 0 or keywordCount['gender_identity_case'] > 0 or  keywordCount['unknown_sogi_case'] > 0):
             #sexual_orientation_case found

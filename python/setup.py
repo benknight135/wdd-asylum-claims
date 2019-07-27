@@ -10,25 +10,29 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.16",
+    version = "0.0.18",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
-    description = ("An demonstration of how to create, document, and publish "
-                                   "to the cheese shop a5 pypi.org."),
+    description = ("Asylum Seekers Claims scrapping of data",
+                        "from web and analysis of outcomes"),
     license = "License :: OSI Approved :: GPL3",
-    keywords = "example documentation tutorial",
+    keywords = "wdd asylum seekers claims webscrape wddasylumclaims",
     url = "https://github.com/benknight135/wdd-asylum-claims",
     packages=['wddasylumclaims'],
-    install_requires=['requests','bs4','pandas','feather-format','numpy'],
+    install_requires=['requests','bs4','pandas','feather-format','numpy','argparse','pypiwin32','regex'],
     package_data={
         'wddasylumclaims': ['sample'],
     },
     include_package_data=True,
     data_files=[('Lib\\site-packages\\wddasylumclaims\\sample', 
         [
-            'sample/keywords.csv','sample/case_links.feather',
-            'sample/case_text_to_500.feather',
-            'sample/case_text_to_5000.feather'
+            'sample/keywords.csv',
+            'sample/py_case_links.csv',
+            'sample/py_case_links.feather',
+            'sample/py_case_text.csv',
+            'sample/py_case_text.feather',
+            'sample/py_case_outcomes.csv',
+            'sample/py_case_outcomes.feather'
         ])],
     entry_points={
         'console_scripts': [
@@ -39,6 +43,6 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: MIT License",
     ],
 )
