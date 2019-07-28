@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.22",
+    version = "0.0.23",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
     description = ("Asylum Seekers Claims scrapping of data",
@@ -21,18 +21,12 @@ setup(
     packages=['wddasylumclaims'],
     install_requires=['requests','bs4','pandas','feather-format','numpy','argparse','pypiwin32','regex'],
     package_data={
-        'wddasylumclaims': ['sample'],
+        'wddasylumclaims': ['data'],
     },
     include_package_data=True,
-    data_files=[('Lib\\site-packages\\wddasylumclaims\\sample', 
+    data_files=[('Lib\\site-packages\\wddasylumclaims\\data', 
         [
-            'sample/keywords.csv',
-            'sample/py_case_links.csv',
-            'sample/py_case_links.feather',
-            'sample/py_case_text.csv',
-            'sample/py_case_text.feather',
-            'sample/py_case_outcomes.csv',
-            'sample/py_case_outcomes.feather'
+            'data/keywords.csv',
         ])],
     entry_points={
         'console_scripts': [

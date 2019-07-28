@@ -25,20 +25,27 @@ def update_csv(url_google_sheet,csv_filepath):
             return False
         csv_reader = csv.DictReader(resp.iter_lines(decode_unicode='utf-8'), delimiter=',')
         fieldnames = csv_reader.fieldnames
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
+        try:
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            writer.writeheader()
 
-        known_headers = csv_reader.fieldnames
-        keywords = {}
-        for h in known_headers:
-            keywords[h] = []
-
-        for row in csv_reader:
-            newRow = {}
+            known_headers = csv_reader.fieldnames
+            keywords = {}
             for h in known_headers:
-                if (row[h]):
-                    newRow[h] = row[h]
-            writer.writerow(newRow)
+                keywords[h] = []
+
+            for row in csv_reader:
+                newRow = {}
+                for h in known_headers:
+                    if (row[h]):
+                        newRow[h] = row[h]
+                writer.writerow(newRow)
+        except IOError as e:
+            errno, strerror = e.args
+            print("I/O error({0}): {1}".format(errno,strerror))
+            print("This is likely due to the file being open. Please make sure it is closed.")
+            return False
+        
     return True
 
 def find_csv(csv_filepath):
@@ -91,65 +98,10 @@ def find_google_sheet(url):
                 keywords.setdefault(h, []).append(row[h])
     return keywords
 
-
-def findKeywordsFeather(feather_dataframe, keywords):
-    rows_count, cols_count = feather_dataframe.shape
-
-    outcomes = []
-
-    print("Searching feather dataset for keywords...")
-
-    for index, row in feather_dataframe.iterrows():
-        keywordCount = {}
-        keywordLoc = {}
-        for h in keywords.keys():
-            keywordCount[h] = 0
-            keywordLoc[h] = []
-
-        data = row['full_text']
-        case_id = row['case_id']
-        for h in keywords.keys():
-            for k in keywords[h]:
-                if (data):
-                    regex = r"\b"+re.escape(k)+r"\b"
-                    if h == "country":
-                        regex = r"\b"+re.escape(k)+r"\b[ ]['A-Z']"
-                    idx = re.search(regex,data)
-                    if (idx != None):
-                        idx = idx.start()
-                        if (idx > -1):
-                            keywordLoc.setdefault(h, []).append([idx,idx+len(k)])
-                            keywordCount[h] = keywordCount[h] + 1
-
-        print("{}/{}".format(index+1, rows_count))
-
-        outcomes.append(
-            {'id': case_id, 'keywordCount': keywordCount, 'keywordLoc': keywordLoc})
-
-    print("Process complete")
-    return outcomes
-
-
-def findKeywordsDiv(div, keywords):
-    keywordCount = {}
-    keywordLoc = {}
-    for h in keywords.keys():
-        keywordCount[h] = 0
-        keywordLoc[h] = []
-
-    for h in keywords.keys():
-        for k in keywords[h]:
-            for line_num, line in enumerate(div):
-                idx = line.find(k)
-                if (idx != None):
-                    if (idx > -1):
-                        keywordLoc.setdefault(h, []).append([line_num, idx])
-                        keywordCount[h] = keywordCount[h] + 1
-    return keywordLoc, keywordCount
-
-
 def search_all_feather(feather_dataset, keywords, backupFolder=None, backupRate=50):
-    outcomes_raw = findKeywordsFeather(feather_dataset, keywords)
+    print("Organising results...")
+
+    #outcomes_raw = findKeywordsFeather(feather_dataset, keywords)
     outcomes = {
         'case_id': [], 'promulgation_date': [], 'sogi_case': [],
         'unsuccessful': [], 'successful': [], 'ambiguous': [],
@@ -160,13 +112,32 @@ def search_all_feather(feather_dataset, keywords, backupFolder=None, backupRate=
     backup_count = 0
     backup_count_max = backupRate # backup every n rows
 
+    rows_count,cols_count = feather_dataset.shape
+
     for index, row in feather_dataset.iterrows():
         raw_data = row['full_text']
         promulgation_date = row['promulgation_date']
-        case_id = outcomes_raw[index]['id']
 
-        keywordCount = outcomes_raw[index]['keywordCount']
-        keywordLoc = outcomes_raw[index]['keywordLoc']
+        keywordCount = {}
+        keywordLoc = {}
+        for h in keywords.keys():
+            keywordCount[h] = 0
+            keywordLoc[h] = []
+
+        case_id = row['case_id']
+        for h in keywords.keys():
+            for k in keywords[h]:
+                if (raw_data):
+                    regex = r"(?i)\b"+re.escape(k)+r"\b"
+                    if h == "country":
+                        regex = r"(?i)\b"+re.escape(k)+r"\b[ ]['A-Z']"
+                    idx = re.search(regex,raw_data)
+                    if (idx != None):
+                        idx = idx.start()
+                        if (idx > -1):
+                            #print("found {} at {}".format(k,idx))
+                            keywordLoc.setdefault(h, []).append([idx,idx+len(k)])
+                            keywordCount[h] = keywordCount[h] + 1
 
         sogi_case = ""
         country = ""
@@ -228,14 +199,61 @@ def search_all_feather(feather_dataset, keywords, backupFolder=None, backupRate=
             ambiguous = False
 
         if ((not ambiguous == "") or (not successful == "") or (not unsuccessful == "")):
-            outcome_known = True
             if (outcome_multi_count > 1):
                 multiple_outcomes = True
+                outcome_known = False
             else:
                 multiple_outcomes = False
+                if(outcome_multi_count == 1):
+                    outcome_known = True
+                else:
+                    outcome_known = False
         else:
             outcome_known = False
 
+        if (outcome_known == False):
+            print(case_id)
+            if unsuccessful:
+                charIndexStart = int(keywordLoc['unsuccessful'][0][0])
+                charIndexEnd = len(raw_data)
+                if (len(raw_data) > charIndexStart + 50):
+                    charIndexEnd = charIndexStart + 50
+                slicetext = raw_data[charIndexStart:charIndexEnd]
+                print (slicetext)
+            if successful:
+                charIndexStart = int(keywordLoc['successful'][0][0])
+                charIndexEnd = len(raw_data)
+                if (len(raw_data) > charIndexStart + 50):
+                    charIndexEnd = charIndexStart + 50
+                slicetext = raw_data[charIndexStart:charIndexEnd]
+                print (slicetext)
+            if ambiguous:
+                charIndexStart = int(keywordLoc['ambiguous_outcome'][0][0])
+                charIndexEnd = len(raw_data)
+                if (len(raw_data) > charIndexStart + 50):
+                    charIndexEnd = charIndexStart + 50
+                slicetext = raw_data[charIndexStart:charIndexEnd]
+                print (slicetext)
+            
+            if (ambiguous or successful or unsuccessful):
+                #TODO check reason for aposing decisions found
+                print ("aposing decisions found")
+            else:
+                #TODO check reason decision not found
+                print("no descision found")
+                '''
+                known_ignore_case_ids = ['[2019] UKUT 217']
+                known_ignore_case = False
+                for k_id in known_ignore_case_ids:
+                    if (k_id == case_id):
+                        known_ignore_case = True
+                        break
+                if (not known_ignore_case):
+                    print("new case id with unknown decision not found")
+                else:
+                    print("ignored case id with unknown decision as desision was marked as ")
+                '''
+                    
         no_page_available = False
         if raw_data == False:
             no_page_available = True
@@ -254,45 +272,30 @@ def search_all_feather(feather_dataset, keywords, backupFolder=None, backupRate=
 
         backup_count = backup_count + 1
         if backup_count > backup_count_max:
-            backup_count = 0
             print ("Saving backup...")
             # store temperary csv and feather files after each row to backup data
             feather_outcomes = pd.DataFrame(outcomes)
 
-            # Check backup directory is valid exists
-            if (backupFolder == None):
-                script_dir = os.path.dirname(os.path.realpath(__file__))
-                if (os.path.exists(script_dir + "\\sample")):
-                    feather_outcomes_path = script_dir +'\\sample\\py_tmp_case_outcomes.feather'
-                    csv_outcomes_path = script_dir +'\\sample\\py_tmp_case_outcomes.csv'
-                elif (os.path.exists(script_dir + "\\..\\sample")):
-                    feather_outcomes_path = script_dir +'\\..\\sample\\py_tmp_case_outcomes.feather'
-                    csv_outcomes_path = script_dir +'\\..\\sample\\py_tmp_case_outcomes.csv'
-                else:
-                    raise Exception ("Script is in unexpected location, cannot locate sample folder")
-            else:
+            if (not backupFolder == None):
+                # check backup data exists
                 if (os.path.exists(backupFolder)):
                     feather_outcomes_path = backupFolder + '\\py_tmp_case_outcomes.feather'
                     csv_outcomes_path = backupFolder + '\\py_tmp_case_outcomes.csv'
                 else:
                     raise Exception ("Backup folder does not exist: {}".format(backupFolder))
+            try:
+                # Save backup feather file
+                feather.write_dataframe(feather_outcomes, feather_outcomes_path)
+                # Save backup csv file
+                feather_outcomes.to_csv(csv_outcomes_path,index_label=False)
+                print ("Backup saved")
+                backup_count = 0
+            except IOError as e:
+                errno, strerror = e.args
+                print("I/O error({0}): {1}".format(errno,strerror))
+                print("This is likely due to the file being open. Please make sure it is closed.")
 
-            # Save backup feather file
-            feather.write_dataframe(feather_outcomes, feather_outcomes_path)
-            # Save backup csv file
-            feather_outcomes.to_csv(csv_outcomes_path,index_label=False)
-            print ("Backup saved")
+        print("{}/{}".format(index+1, rows_count))
 
     feather_outcomes = pd.DataFrame(outcomes)
     return feather_outcomes
-
-def search(url, keywords):
-    # Scrape html page for decision document
-    div_name = 'decision-inner'
-    decision_html = WebScrape.scrape(url, div_name)
-    if (decision_html):
-        # Find keywords in document
-        keywordLoc, keywordCount = findKeywordsDiv(decision_html, keywords)
-        return keywordLoc, keywordCount
-    else:
-        return False, False

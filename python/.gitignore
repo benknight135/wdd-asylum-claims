@@ -1,6 +1,9 @@
 # general things to ignore
 build/
 dist/
+data/
+!data/keywords.csv
+!data/__init__.py
 .vscode/
 !.vscode/launch.json
 !.vscode/task.json
