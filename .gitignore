@@ -1,9 +1,25 @@
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-.httr-oauth
+# R things to ignore
+*.Rproj.user
+*.Rproj
+*.Rhistory
+*.RData
+*.Ruserdata
+*.httr-oauth
+
+# python things to ignore
+python/build/
+python/dist/
+python/data/*
+!python/data/keywords.csv
+!*__init__.py
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
 
 # general things to ignore
 .vscode/
-__pycache__/
+!.vscode/launch.json
+!.vscode/task.json
