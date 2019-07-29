@@ -1,4 +1,4 @@
-from DbAsylumClaims import __main__ as DbAsylumClaims
+from wddasylumclaims.DbAsylumClaims import __main__ as DbAsylumClaims
 
 if __name__ == "__main__":
     # test database

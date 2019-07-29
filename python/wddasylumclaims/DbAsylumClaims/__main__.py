@@ -1,4 +1,4 @@
-from DbAsylumClaims.Admin import Admin
+from wddasylumclaims.DbAsylumClaims.Admin import Admin
 
 def get_args():
     args = None
@@ -10,10 +10,11 @@ def main():
     adminDb = Admin()
     # Connect to database
     if(adminDb.connect()):
+        success = adminDb.printTables()
         # Reset tables in database
         #success = adminDb.resetTables()
         # Create user login
-        success = adminDb.createUserLogin()
+        #success = adminDb.createUserLogin()
         if (success):
             #TODO Confirm user added by listing users
 

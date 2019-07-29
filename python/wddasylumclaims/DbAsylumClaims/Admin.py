@@ -1,6 +1,6 @@
 import pyodbc
 from getpass import getpass
-from DbAsylumClaims.Db import DbAsylumClaims
+from wddasylumclaims.DbAsylumClaims.Db import DbAsylumClaims
 
 class Admin(DbAsylumClaims):
     def __init__(self):
