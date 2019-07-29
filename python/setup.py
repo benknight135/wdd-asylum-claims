@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.23",
+    version = "0.0.24",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
     description = ("Asylum Seekers Claims scrapping of data",
@@ -18,8 +18,8 @@ setup(
     license = "License :: OSI Approved :: GPL3",
     keywords = "wdd asylum seekers claims webscrape wddasylumclaims",
     url = "https://github.com/benknight135/wdd-asylum-claims",
-    packages=['wddasylumclaims'],
-    install_requires=['requests','bs4','pandas','feather-format','numpy','argparse','pypiwin32','regex'],
+    packages=['wddasylumclaims','DbAsylumClaims'],
+    install_requires=['requests','bs4','pandas','feather-format','numpy','argparse','pypiwin32','regex','pyodbc'],
     package_data={
         'wddasylumclaims': ['data'],
     },

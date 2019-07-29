@@ -1,4 +1,4 @@
-# Asulum Claims for WDD Hackathon
+# Asulum Claims python package
 
 ## Required modules
 
@@ -7,13 +7,18 @@
 - pandas
 - feather-format
 - numpy
+- argparse
+- pypiwin32
+- regex
+- pyodbc
 
 Install via pip
-(Not currently released so using TestPyPi)
 
 ```bash
-python -m pip install --index-url https://test.pypi.org/simple/ --no-deps wddasylumclaims
+python -m pip wddasylumclaims
 ```
+
+This will download all the required modules and install wddasylumclaims
 
 ## Run
 
@@ -23,10 +28,8 @@ Run script using:
 python -m wddasylumclaims [optional arguments]
 ```
 
-Arguments:
+For help with optional arguments:
 
--f --filepath PATH_TO_CSV
-
-(PATH_TO_CSV can also be the public web url to a google sheet)
-
--u --url URL_TO_SCRAPE
+```bash
+python -m wddasylumclaims -h
+```
