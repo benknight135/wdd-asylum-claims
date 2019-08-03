@@ -1,4 +1,4 @@
-# R things to ignore
+# R files to ignore
 *.Rproj.user
 *.Rproj
 *.Rhistory
@@ -6,12 +6,11 @@
 *.Ruserdata
 *.httr-oauth
 
-# python things to ignore
-python/build/
-python/dist/
+# python files to ignore
+python/build/*
+python/dist/*
 python/data/*
-!python/data/keywords.csv
-!*__init__.py
+python/wddasylumclaims.egg-info/*
 *.egg-info/
 *.egg
 *.py[cod]
@@ -19,7 +18,13 @@ __pycache__/
 *.so
 *~
 
-# general things to ignore
+# python ignore exceptions
+!python/data/keywords.csv
+!*__init__.py
+
+# general files to ignore
 .vscode/
+
+# general ignore exceptions
 !.vscode/launch.json
 !.vscode/task.json
