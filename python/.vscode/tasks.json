@@ -1,0 +1,63 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run_module",
+            "type": "shell",
+            "command": "python -m wddasylumclaims",
+            "options": {
+                "cwd": "C:\\"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "uninstall_test",
+            "type": "shell",
+            "command": "python -m pip uninstall wddasylumclaims",
+            "options": {
+                "cwd": "C:\\"
+            },
+            "group": "build"
+        },
+        {
+            "label": "install_test",
+            "type": "shell",
+            "command": "python -m pip install --index-url https://test.pypi.org/simple/ --no-deps wddasylumclaims",
+            "options": {
+                "cwd": "C:\\"
+            },
+            "group": "build",
+            "dependsOn": [
+                "uninstall_test"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "upload_test",
+            "type": "shell",
+            "command": "python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "build"
+            ]
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "python3 setup.py sdist bdist_wheel",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build"
+        }
+    ]
+}

@@ -11,7 +11,8 @@ python/build/*
 python/dist/*
 python/data/*
 python/wddasylumclaims.egg-info/*
-*.egg-info/
+python/.vscode/*
+*.egg-info/*
 *.egg
 *.py[cod]
 __pycache__/
@@ -20,11 +21,13 @@ __pycache__/
 
 # python ignore exceptions
 !python/data/keywords.csv
+!python/.vscode/launch.json
+!python/.vscode/tasks.json
 !*__init__.py
 
 # general files to ignore
-.vscode/
+.vscode/*
 
 # general ignore exceptions
 !.vscode/launch.json
-!.vscode/task.json
+!.vscode/tasks.json
