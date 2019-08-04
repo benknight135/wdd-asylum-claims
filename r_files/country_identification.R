@@ -20,9 +20,9 @@ cases_text[, full_text := gsub("  ", " ", full_text)]
 cases_text[, full_text := gsub("\n", " ", full_text, fixed = TRUE)]
 
 # Reduce to a managebale set to manually review
-# Uncomment below to get a smaller set to work with
-# smaller_set <- cases_text[1:250]
-smaller_set <- copy(cases_text)
+# Uncomment below to use full set
+smaller_set <- cases_text[1:250]
+# smaller_set <- copy(cases_text)
 
 
 #### Basic attempt to get country ----------------------------------------------
@@ -128,10 +128,10 @@ case_outcomes[, country_5 := gsub(" and\\b", "", country_5)]
 #### Results
 
 # Prop matching initially
-case_outcomes[!is.na(country) & !is.na(country_2) & !country_2 %like% " ", .N]/250
+case_outcomes[!is.na(country) & !is.na(country_2) & !country_2 %like% " ", .N]/case_outcomes[, .N]
 
 # Prop matching ultimately
-case_outcomes[!is.na(country_5), .N]/250
+case_outcomes[!is.na(country_5), .N]/case_outcomes[, .N]
 
 
 
