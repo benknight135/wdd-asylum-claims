@@ -18,8 +18,8 @@ python/.vscode/*
 __pycache__/
 *.so
 *~
-# Data should be stored in azure database [not currently working] 
-# previously store data from this folder is avaiable here: 
+# Data should be stored in azure database [not currently working] or in users documents
+# previously stored data from this folder is avaiable here: 
 # https://drive.google.com/drive/folders/12TQPUoxI76KMGwthTMI6tNrBIIArnSIp?usp=sharing
 data/*
 
