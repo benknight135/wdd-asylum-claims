@@ -43,6 +43,8 @@ for (i in 1:length(focus_links)) {
       download() %>%
       read_document() %>%
       paste(collapse = "\n")
+    
+    decision_text <- gsub("\n", " ", decision_text)
   }
   
   id_dt <- data.table("case_id" = case_id, 
@@ -130,5 +132,7 @@ case_outcomes <- merge(case_outcomes, full_text_of_cases[, .(case_id, no_page_av
 cases_to_review <- case_outcomes[outcome_known == 0 & no_page_available == FALSE]
 
 feather::write_feather(case_outcomes, "data/last_6000_outcomes.feather")
+
+
 # feather::write_feather(full_text_of_cases, "case_text_to_500.feather")
 
