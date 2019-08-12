@@ -4,41 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "run_module",
+            "label": "build_upload_install",
             "type": "shell",
-            "command": "python -m wddasylumclaims",
-            "options": {
-                "cwd": "C:\\"
-            },
-            "group": "build",
-            "problemMatcher": []
-        },
-        {
-            "label": "uninstall_test",
-            "type": "shell",
-            "command": "python -m pip uninstall wddasylumclaims",
-            "options": {
-                "cwd": "C:\\"
-            },
-            "group": "build"
-        },
-        {
-            "label": "install_test",
-            "type": "shell",
-            "command": "python -m pip install --index-url https://test.pypi.org/simple/ --no-deps wddasylumclaims",
-            "options": {
-                "cwd": "C:\\"
-            },
-            "group": "build",
-            "dependsOn": [
-                "uninstall_test"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "upload_test",
-            "type": "shell",
-            "command": "python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*",
+            "command": ".\\tasks\\build_upload_install.bat",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -46,18 +14,51 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": [
-                "build"
-            ]
+            "problemMatcher": []
         },
         {
             "label": "build",
             "type": "shell",
-            "command": "python3 setup.py sdist bdist_wheel",
+            "command": ".\\tasks\\build.bat",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "install",
+            "type": "shell",
+            "command": ".\\tasks\\install.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "uninstall",
+            "type": "shell",
+            "command": ".\\tasks\\uninstall.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "upload",
+            "type": "shell",
+            "command": ".\\tasks\\upload.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": ".\\tasks\\run.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
         }
     ]
 }

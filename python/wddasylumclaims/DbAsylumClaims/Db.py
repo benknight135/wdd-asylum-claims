@@ -47,6 +47,18 @@ class DbAsylumClaims:
             # Connection to database not initialised
             return False
 
+    def addRow(self,table,values):
+        if (self.checkConnected()):
+            sql = "INSERT INTO " + table
+            # comma seperated values (e.g. "val1,val2,val3,val4")
+            # should include value for all columns in table
+            sql = sql + "VALUES (" + values + ");"
+            success = self.sqlCommand(sql)
+            return success
+        else:
+            # Connection to database is not initialised
+            return False
+
     def printTables(self):
         if (self.checkConnected()): # check connection to database
             # Print all tables in database
@@ -75,4 +87,31 @@ class DbAsylumClaims:
         else:
             # Connection to database not initialised
             return False
+
+    def commit(self):
+        # Commit changes to database
+        if (self.checkConnected()): # check database connection
+            try:
+                # commit changes to database
+                self.cnxn.commit()
+                return True
+            except pyodbc.Error as ex:
+                # commit failed
+                print("Database error caught")
+                sqlstate = ex.args[1]
+                print(sqlstate)
+                return False
+        else:
+            return False
+
+    def commit_close(self):
+        # Commit changes and close database connection
+        # Commit changes to database
+        print ("Commiting changes to database")
+        success = self.commit()
+        if (not success):
+            return False
+        # Close database connection
+        success = self.close()
+        return success
 

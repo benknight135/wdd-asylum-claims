@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = "wddasylumclaims",
-    version = "0.0.25",
+    version = "0.0.30",
     author = "Ben Knight",
     author_email = "benknight135@gmail.com",
     description = ("Asylum Seekers Claims scrapping of data",
@@ -30,7 +30,8 @@ setup(
         ])],
     entry_points={
         'console_scripts': [
-            'wddasylumclaims=wddasylumclaims.__main__:main',
+            'wddasylumclaims = wddasylumclaims.__main__:main',
+            'convertfeather = wddasylumclaims.FeatherConvert:main'
         ],
     },
     long_description=read('README.md'),

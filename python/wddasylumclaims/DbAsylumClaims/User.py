@@ -2,12 +2,11 @@ import pyodbc
 from getpass import getpass
 from wddasylumclaims.DbAsylumClaims.Db import DbAsylumClaims
 
-class Admin(DbAsylumClaims):
+class User(DbAsylumClaims):
     def __init__(self):
         super().__init__()
 
     def connect(self):
-        #TODO create read-only user in database
         username = "dbuser"
         password = "AsylumClaims123"
         database = "asylumclaims"
